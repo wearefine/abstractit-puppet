@@ -1,2 +1,4 @@
 pkg/*
 spec/fixtures/modules/*
+.ruby-version
+.ruby-gemset

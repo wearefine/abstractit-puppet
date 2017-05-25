@@ -3,31 +3,15 @@ require 'spec_helper'
 require 'pry'
 
 describe 'puppet::profile::r10k', :type => :class do
-  on_supported_os({
-      :hardwaremodels => ['x86_64'],
-      :supported_os   => [
-        {
-          "operatingsystem" => "Ubuntu",
-          "operatingsystemrelease" => [
-            "14.04"
-          ]
-        },
-        {
-          "operatingsystem" => "CentOS",
-          "operatingsystemrelease" => [
-            "6",
-            "7"
-          ]
-        }
-      ],
-    }).each do |os, facts|
+  on_supported_os.each do |os, facts|
     context "When on an #{os} system" do
       let(:facts) do
         facts.merge({
           :concat_basedir => '/tmp',
           :fqdn           => 'constructorfleet.vogon.gal',
           :domain         => 'vogon.gal',
-          :puppetversion => Puppet.version
+          :puppetversion  => Puppet.version,
+          :is_pe          => false,
         })
       end
       it { is_expected.to compile.with_all_deps }
@@ -44,16 +28,41 @@ describe 'puppet::profile::r10k', :type => :class do
             :version => 'installed'
           })
         end
-        # it 'should contain puppet_r10k cron' do
-        #   should contain_cron('puppet_r10k').with({
-        #     :ensure      => true,
-        #     :command     => "r10k deploy environment production -p",
-        #     :environment => 'PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin',
-        #     :user        => true,
-        #     :minute      => [0,15,30,45],
-        #   })
-        # end
+      #   # it 'should contain puppet_r10k cron' do
+      #   #   should contain_cron('puppet_r10k').with({
+      #   #     :ensure      => true,
+      #   #     :command     => "r10k deploy environment production -p",
+      #   #     :environment => 'PATH=/usr/local/bin:/bin:/usr/bin:/usr/sbin',
+      #   #     :user        => true,
+      #   #     :minute      => [0,15,30,45],
+      #   #   })
+      #   # end
       end#no params
+
+      # context 'when given webhook configurations' do
+      #   let(:params) do
+      #     {
+      #       :r10k => {
+      #         :webhook  => {
+      #           :config => {
+      #             :ensure => 'present',
+      #             :use_mcollective => false,
+      #             :public_key_path => '/etc/mcollective/server_public.pem',
+      #             :private_key_path => '/etc/mcollective/server_private.pem'
+      #           }
+      #         }
+      #       }
+      #     }
+      #   end
+      #   it 'should contain classes r10k::webhook and r10k::webhook::config' do
+      #     should contain_class('r10k::webhook::config').with({
+      #       :ensure => 'present',
+      #       :use_mcollective => false,
+      #       :public_key_path => '/etc/mcollective/server_public.pem',
+      #       :private_key_path => '/etc/mcollective/server_private.pem'
+      #     })
+      #   end
+      # end
 
     end
   end
